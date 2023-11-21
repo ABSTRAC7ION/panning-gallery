@@ -16,6 +16,19 @@ const cars = [
 ];
 
 const App = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 720px)");
+    setIsMobile(mediaQuery.matches);
+    // Add a listener to re-check the media query when the viewport changes
+    const onChange = () => setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener("change", onChange);
+
+    // Remove the listener when the component unmounts
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, []);
+
   const [hoverInfo, setHoverInfo] = useState(null);
   useEffect(() => {
     const gallery = document.getElementById("gallery");
@@ -59,34 +72,42 @@ const App = () => {
   return (
     <AnimatePresence>
       <div>
-        <div className="pointer-events-none mix-blend-difference z-50 absolute top-0 w-screen h-screen">
-          <motion.div initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2, ease: "linear" }} className="absolute bottom-4 w-full justify-center items-center flex text-white">
-            <h1 className="text-xl text-center">TOP 10 FASTEST <span>NURBURGRING LAP</span> TIMES BY PRODUCTION CARS</h1>
-          </motion.div>
-
-          <div className="flex justify-center items-center text-white h-full">
-
-            {hoverInfo && (
-              <div className="text-5xl flex flex-col items-center">
-                <p className="text-lg">{hoverInfo.ranking}/10</p>
-                <h2>{hoverInfo.name}</h2>
-                <p className="text-2xl">{hoverInfo.speed}</p>
-              </div>
-            )}
-          </div>
+      {isMobile ? (
+        <div>
+        <img src="https://i.imgur.com/MK49ron.png" alt="backdrop" className="fixed h-screen w-screen object-cover "/>
+        <div className="h-screen w-screen z-[90] flex justify-center items-center backdrop-blur-xl bg-white/10">
+          <h1 className="text-2xl px-16 text-center Dolce text-white">OPEN WITH DESKTOP FOR THE BEST EXPERIENCE<br /> 🖥️</h1>
         </div>
-        <div id="gallery">
-          {cars.map((car) => (
-            <div className="tile" onMouseEnter={() => handleHover(car.name, car.speed, car.rank)}>
-              <img src={car.img} alt={car.name} />
-            </div>
-          ))}
-          <div className="tile Dolce text-white text-2xl" onMouseEnter={() => handleHover("A Website Developed By Flawless Productions", "Visit Our Website")}>
-            <a href="https://flawlessproductions.netlify.app/">FLAWLESS PRODUCTIONS</a>
-          </div>
         </div>
+      ):(<div><div className="pointer-events-none mix-blend-difference z-50 absolute top-0 w-screen h-screen">
+      <motion.div initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: "linear" }} className="absolute bottom-4 w-full justify-center items-center flex text-white">
+        <h1 className="text-xl text-center">TOP 10 FASTEST <span>NURBURGRING LAP</span> TIMES BY PRODUCTION CARS</h1>
+      </motion.div>
+
+      <div className="flex justify-center items-center text-white h-full">
+
+        {hoverInfo && (
+          <div className="text-5xl flex flex-col items-center">
+            <p className="text-lg">{hoverInfo.ranking}/10</p>
+            <h2>{hoverInfo.name}</h2>
+            <p className="text-2xl">{hoverInfo.speed}</p>
+          </div>
+        )}
+      </div>
+    </div>
+    <div id="gallery">
+      {cars.map((car) => (
+        <div className="tile" onMouseEnter={() => handleHover(car.name, car.speed, car.rank)}>
+          <img src={car.img} alt={car.name} />
+        </div>
+      ))}
+      <div className="tile Dolce text-white text-2xl" onMouseEnter={() => handleHover("A Website Developed By Flawless Productions", "Visit Our Website")}>
+        <a href="https://flawlessproductions.netlify.app/">FLAWLESS PRODUCTIONS</a>
+      </div>
+    </div></div>)}
+        
     </div>
     </AnimatePresence>
   );
